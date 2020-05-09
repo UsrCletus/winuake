@@ -1,0 +1,7 @@
+ls -alh
+ssh
+cd C:\
+dir
+ls
+powershell
+exit
