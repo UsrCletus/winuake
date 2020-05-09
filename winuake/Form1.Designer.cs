@@ -47,7 +47,7 @@
             this.Name = "frmMain";
             this.Text = "Winuake";
             this.Load += new System.EventHandler(this.frmMain_Load);
-            this.ResizeEnd += new System.EventHandler(this.frmMain_ResizeEnd);
+            this.SizeChanged += new System.EventHandler(this.frmMain_SizeChanged);
             this.ResumeLayout(false);
 
         }

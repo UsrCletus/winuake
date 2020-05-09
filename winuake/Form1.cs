@@ -9,6 +9,10 @@ namespace winuake
 {
     public partial class frmMain : Form
     {
+        //Constants for Padding
+        private const int PAD_WIDTH = -16;
+        private const int PAD_HEIGHT = -40;
+
         //Constants for Window Styles
         private const uint MF_BYPOSITION = 0x400;
         private const uint MF_REMOVE = 0x1000;
@@ -38,26 +42,25 @@ namespace winuake
         {
             InitializeComponent();
         }
-        private static Process p;
-        private static IntPtr windowHandle;
+        private Process p = null;
         private void frmMain_Load(object sender, EventArgs e)
         {
             pnlOutput.Height = this.Bounds.Height;
             pnlOutput.Width = this.Bounds.Width;
             p = Process.Start("cmd.exe");
+            Thread.Sleep(500);
             int style = GetWindowLong(p.MainWindowHandle, GWL_STYLE);
             style = style & ~WS_CAPTION;
             style = style & ~WS_SYSMENU;
             style = style & ~WS_THICKFRAME;
             style = style & ~WS_MINIMIZE;
             style = style & ~WS_MAXIMIZEBOX;
-            /*SetWindowLong(p.MainWindowHandle, GWL_STYLE, style);
+            SetWindowLong(p.MainWindowHandle, GWL_STYLE, style);
             style = GetWindowLong(p.MainWindowHandle, GWL_EXSTYLE);
             SetWindowLong(p.MainWindowHandle, GWL_EXSTYLE, style | WS_EX_DLGMODALFRAME);
-            SetWindowPos(p.MainWindowHandle, 0, 0, 0, pnlOutput.Bounds.Width, pnlOutput.Bounds.Height, SWP_NOMOVE | SWP_NOSIZE | SWP_FRAMECHANGED);*/
-            Thread.Sleep(500);
+            SetWindowPos(p.MainWindowHandle, 0, 0, 0, pnlOutput.Bounds.Width, pnlOutput.Bounds.Height, SWP_NOMOVE | SWP_NOSIZE | SWP_FRAMECHANGED);
             SetParent(p.MainWindowHandle, pnlOutput.Handle);
-            MoveWindow(p.MainWindowHandle, 0, 0, pnlOutput.Width, pnlOutput.Height, true);
+            MoveWindow(p.MainWindowHandle, 0, 0, pnlOutput.Width + PAD_WIDTH, pnlOutput.Height + PAD_HEIGHT, true);
             SendMessage(p.MainWindowHandle, WmPaint, IntPtr.Zero, IntPtr.Zero);
         }
 
@@ -69,14 +72,12 @@ namespace winuake
             public int bottom;
         }
 
-        private void frmMain_ResizeEnd(object sender, EventArgs e)
+        private void Resize()
         {
             pnlOutput.Height = this.Height;
             pnlOutput.Width = this.Width;
-            //SetWindowPos(windowHandle, 0, 0, 0, pnlOutput.Bounds.Width, pnlOutput.Bounds.Height, SWP_NOZORDER | SWP_SHOWWINDOW);
-            MoveWindow(p.MainWindowHandle, 0, 0, pnlOutput.Width, pnlOutput.Height, true);
+            MoveWindow(p.MainWindowHandle, 0, 0, pnlOutput.Width + PAD_WIDTH, pnlOutput.Height + PAD_HEIGHT, true);
             SendMessage(p.MainWindowHandle, WmPaint, IntPtr.Zero, IntPtr.Zero);
-            //MessageBox.Show(windowHandle.ToString());
         }
 
         //Finds a window by class name
@@ -129,6 +130,14 @@ namespace winuake
 
         private void button1_Click_1(object sender, EventArgs e)
         {
+        }
+
+        private void frmMain_SizeChanged(object sender, EventArgs e)
+        {
+            if ( p != null)
+            {
+                Resize();
+            }
         }
     }
 }
