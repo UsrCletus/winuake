@@ -1,0 +1,11 @@
+C:\Users\Mike\source\repos\winuake\winuake\bin\Release\winuake.exe.config
+C:\Users\Mike\source\repos\winuake\winuake\bin\Release\winuake.exe
+C:\Users\Mike\source\repos\winuake\winuake\bin\Release\winuake.pdb
+C:\Users\Mike\source\repos\winuake\winuake\bin\Release\Gma.System.MouseKeyHook.dll
+C:\Users\Mike\source\repos\winuake\winuake\obj\Release\winuake.frmMain.resources
+C:\Users\Mike\source\repos\winuake\winuake\obj\Release\winuake.Properties.Resources.resources
+C:\Users\Mike\source\repos\winuake\winuake\obj\Release\winuake.csproj.GenerateResource.cache
+C:\Users\Mike\source\repos\winuake\winuake\obj\Release\winuake.csproj.CoreCompileInputs.cache
+C:\Users\Mike\source\repos\winuake\winuake\obj\Release\winuake.csproj.CopyComplete
+C:\Users\Mike\source\repos\winuake\winuake\obj\Release\winuake.exe
+C:\Users\Mike\source\repos\winuake\winuake\obj\Release\winuake.pdb
