@@ -11,6 +11,11 @@ namespace winuake
 {
     public partial class frmMain : Form
     {
+        private List<Process> listOfProcesses = new List<Process>();
+        private List<TabPage> listOfTabPages = new List<TabPage>();
+
+        private bool exiting = false;
+
         //Minimization Magic
         const int WS_MINIMIZEBOX = 0x20000;
         const int CS_DBLCLKS = 0x8;
@@ -45,11 +50,15 @@ namespace winuake
         private const int SWP_SHOWWINDOW = 0x0040;
 
         //Constants for Window Redraw Flags
-        public const uint RDW_INVALIDATE = 0x1;
+        private const uint RDW_INVALIDATE = 0x1;
         private const int WmPaint = 0x000F;
 
+        //Constants for Focus
+        private const int WM_SETFOCUS = 0x0007;
+        private const int WM_KILLFOCUS = 0x0008;
+
         //Constant for process(es)
-        private Process p = null;
+        //private Process p = null;
         private String shell = @"C:\Windows\sysnative\wsl.exe";
         private String startDir = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
 
@@ -57,6 +66,9 @@ namespace winuake
         private const int WM_SYSCOMMAND = 0x0112;
         private const int SC_MINIMIZE = 0xf020;
         private const int SC_MAXIMIZE = 0xf030;
+
+        //Keyboard Combination Vars
+        //private 
 
         public frmMain()
         {
@@ -76,9 +88,62 @@ namespace winuake
             }
         }
 
-        private void ExitFunk(object sender, EventArgs e)
+        private void ExitFunk(object sender, EventArgs e, TabPage tabOutput)
         {
-            Application.Exit();
+            listOfTabPages.Remove(tabOutput);
+            if (tabCtrl.InvokeRequired)
+            {
+                Thread exitThread = new Thread(delegate ()
+                {
+                    try
+                    {
+                        tabCtrl.Invoke(new MethodInvoker(delegate
+                        {
+                            if (tabCtrl.TabPages.Count > 1)
+                            {
+                                tabCtrl.TabPages.Remove(tabOutput);
+                                focusLastTab();
+                            }
+                        }));
+                    }catch(Exception err)
+                    {
+                        Console.WriteLine("Exception: " + err.ToString());
+                    }
+                });
+                exitThread.Start();
+            }
+            else
+            {
+                if (tabCtrl.TabPages.Count > 1)
+                {
+                    tabCtrl.TabPages.Remove(tabOutput);
+                    focusLastTab();
+                }
+            }
+
+            if(listOfTabPages.Count < 1)
+            {
+                if (!exiting)
+                {
+                    if (tabCtrl.InvokeRequired)
+                    {
+                        Thread exitThread = new Thread(delegate ()
+                        {
+                            tabCtrl.Invoke(new MethodInvoker(delegate
+                            {
+                                tabCtrl.TabPages.Clear();
+                                addTab();
+                            }));
+                        });
+                        exitThread.Start();
+                    }
+                    else
+                    {
+                        tabCtrl.TabPages.Clear();
+                        addTab();
+                    }
+                }
+            }
         }
 
         private void FixSize()
@@ -87,92 +152,214 @@ namespace winuake
             {
                 Show();
             }
-            pnlOutput.Height = this.Height;
-            pnlOutput.Width = this.Width;
-            MoveWindow(p.MainWindowHandle, 0, 0, pnlOutput.Width + PAD_WIDTH, pnlOutput.Height + PAD_HEIGHT, true);
-            SendMessage(p.MainWindowHandle, WmPaint, IntPtr.Zero, IntPtr.Zero);
+            tabCtrl.Height = this.Bounds.Height-15;
+            tabCtrl.Width = this.Bounds.Width;
+
+            for(int i = 0; i < listOfProcesses.Count; i++)
+            {
+                Process p = listOfProcesses[i];
+                MoveWindow(p.MainWindowHandle, 0, 0, tabCtrl.Width + PAD_WIDTH, tabCtrl.Height, true);
+                SendMessage(p.MainWindowHandle, WmPaint, IntPtr.Zero, IntPtr.Zero);
+            }
+
+            
         }
 
         private void frmMain_FormClosing(object sender, FormClosingEventArgs e)
         {
             Unsubscribe();
-            try
+            for (int i = 0;i < listOfProcesses.Count; i++)
             {
-                p.Kill();
+                Process p = listOfProcesses[i];
+                try
+                {
+                    p.Kill();
+                }catch(Exception err)
+                {
+                    Console.WriteLine("Exception: " + err.ToString());
+                }
+                
             }
-            catch (Exception exc)
+        }
+
+        private void addProcess(TabPage tabOutput)
+        {
+            Process p = new Process();
+            p.StartInfo.FileName = shell;
+            p.StartInfo.UseShellExecute = false;
+            p.StartInfo.WorkingDirectory = startDir;
+            p.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
+            p.EnableRaisingEvents = true;
+            p.Exited += new EventHandler((s, e) => ExitFunk(s, e, tabOutput));
+            p.Start();
+
+            Thread.Sleep(500);
+
+            //Set Window Style
+            StyleWindow(p);
+
+            //Focus on new Tab
+            if (tabCtrl.InvokeRequired)
             {
+                Thread exitThread = new Thread(delegate ()
+                {
+                    tabCtrl.Invoke(new MethodInvoker(delegate
+                    {
+                        tabCtrl.SelectedTab = tabOutput;
+                        SetParent(p.MainWindowHandle, tabOutput.Handle);
+                    }));
+                });
+                exitThread.Start();
+            }
+            else
+            {
+                tabCtrl.SelectedTab = tabOutput;
+                SetParent(p.MainWindowHandle, tabOutput.Handle);
             }
 
+            //Position the Window
+            PositionWindow(p, tabOutput);
+            SetForegroundWindow(p.MainWindowHandle);
+
+            listOfProcesses.Add(p);
+            listOfTabPages.Add(tabOutput);
+        }
+
+        private void focusLastTab()
+        {
+            //Focus on new Tab
+            if (tabCtrl.InvokeRequired)
+            {
+                Thread exitThread = new Thread(delegate ()
+                {
+                    tabCtrl.Invoke(new MethodInvoker(delegate
+                    {
+                        tabCtrl.SelectedTab = tabCtrl.TabPages[tabCtrl.TabPages.Count-1];
+                        SetParent(listOfProcesses[tabCtrl.TabPages.Count - 1].MainWindowHandle, tabCtrl.TabPages[tabCtrl.TabPages.Count - 1].Handle);
+                        PositionWindow(listOfProcesses[tabCtrl.TabPages.Count - 1], tabCtrl.TabPages[tabCtrl.TabPages.Count - 1]);
+                        SetForegroundWindow(listOfProcesses[tabCtrl.TabPages.Count - 1].MainWindowHandle);
+                    }));
+                });
+                exitThread.Start();
+            }
+            else
+            {
+                tabCtrl.SelectedTab = tabCtrl.TabPages[tabCtrl.TabPages.Count-1];
+                SetParent(listOfProcesses[tabCtrl.TabPages.Count - 1].MainWindowHandle, tabCtrl.TabPages[tabCtrl.TabPages.Count - 1].Handle);
+                PositionWindow(listOfProcesses[tabCtrl.TabPages.Count - 1], tabCtrl.TabPages[tabCtrl.TabPages.Count - 1]);
+                SetForegroundWindow(listOfProcesses[tabCtrl.TabPages.Count - 1].MainWindowHandle);
+            }
+
+            //Position the Window
+            
+            
+        }
+
+        private void addTab()
+        {
+            int tabNum = 0;
+            bool foundFree = false;
+            while (!foundFree)
+            {
+                tabNum += 1;
+                if (tabNum < tabCtrl.TabCount + 1)
+                {
+                    bool foundMatch = false;
+                    for (int i = 0; i < tabCtrl.TabCount; i++)
+                    {
+                        TabPage tabPage = tabCtrl.TabPages[i];
+                        if (tabPage.Text.ToString().Contains(tabNum.ToString()))
+                        {
+                            foundMatch = true;
+                        }
+                    }
+                    if (!foundMatch)
+                    {
+                        foundFree = true;
+                    }
+                }
+                else
+                {
+                    foundFree = true;
+                }
+            }
+            string tabTitle = "Shell" + (tabNum).ToString();
+            TabPage newTab = new TabPage(tabTitle);
+            if (tabCtrl.InvokeRequired)
+            {
+                Thread exitThread = new Thread(delegate ()
+                {
+                    tabCtrl.Invoke(new MethodInvoker(delegate
+                    {
+                        tabCtrl.TabPages.Add(newTab);
+                        addProcess(newTab);
+                    }));
+                });
+                exitThread.Start();
+            }
+            else
+            {
+                tabCtrl.TabPages.Add(newTab);
+                addProcess(newTab);
+            }
+            
         }
 
         private void frmMain_Load(object sender, EventArgs e)
         {
             this.Width = Screen.PrimaryScreen.WorkingArea.Width;
             this.Height = Screen.FromControl(this).Bounds.Height / 2;
-            pnlOutput.Height = this.Bounds.Height;
-            pnlOutput.Width = this.Bounds.Width;
+            tabCtrl.Location = new Point(0, 0);
+            tabCtrl.Height = this.Bounds.Height;
+            tabCtrl.Width = this.Bounds.Width;
             this.FormBorderStyle = FormBorderStyle.None;
             this.CenterToScreen();
             this.Top = 0;
-
-            p = new Process();
-            p.StartInfo.FileName = shell;
-            p.StartInfo.UseShellExecute = false;
-            p.StartInfo.WorkingDirectory = startDir;
-            p.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
-            p.EnableRaisingEvents = true;
-            p.Exited += new EventHandler(ExitFunk);
-            p.Start();
-            
-            Thread.Sleep(500);
-
-            //Set Window Style
-            this.StyleWindow(p);
-
-            SetParent(p.MainWindowHandle, pnlOutput.Handle);
-
-            //Position the Window
-            this.PositionWindow(p);
-            pnlOutput.Focus();
-            SetForegroundWindow(p.MainWindowHandle);
+            tabCtrl.TabPages.Clear();
+            addTab();
         }
 
         private void frmMain_SizeChanged(object sender, EventArgs e)
         {
-            if (p != null)
-            {
                 FixSize();
-            }
         }
 
-        private void GlobalHookKeyF1Press()
+        private void GlobalHookKeyCtrlF1Press()
         {
             if (this.WindowState == FormWindowState.Minimized)
             {
                 this.WindowState = FormWindowState.Normal;
                 Show();
-                this.PositionWindow(p);
+                //PositionWindow(p);
+                //tabOutput.Focus();
+                //SetForegroundWindow(p.MainWindowHandle);
                 notifyIcon.Visible = false;
             }
             else
             {
+                //SendMessage(p.MainWindowHandle, WM_KILLFOCUS, IntPtr.Zero, IntPtr.Zero);
                 Hide();
                 this.WindowState = FormWindowState.Minimized;
                 notifyIcon.Visible = true;
             }
         }
 
+        private void GlobalHookKeyCtrlShiftF1Press()
+        {
+            //MessageBox.Show("Triggered");
+            //tabOutput.Focus();
+            //SendMessage(p.MainWindowHandle, WM_KILLFOCUS, IntPtr.Zero, IntPtr.Zero);
+        }
+
         private void GlobalHookKeyPress(object sender, KeyPressEventArgs e)
         {
             e.Handled = true;
-            
         }
 
-        private void PositionWindow(Process p)
+        private void PositionWindow(Process p, TabPage tabOutput)
         {
-            SetWindowPos(p.MainWindowHandle, 0, 0, 0, pnlOutput.Bounds.Width, pnlOutput.Bounds.Height, SWP_NOMOVE | SWP_NOSIZE | SWP_FRAMECHANGED);
-            MoveWindow(p.MainWindowHandle, 0, 0, pnlOutput.Width + PAD_WIDTH, pnlOutput.Height + PAD_HEIGHT, true);
+            SetWindowPos(p.MainWindowHandle, 0, 0, 0, tabOutput.Bounds.Width, tabOutput.Bounds.Height, SWP_NOMOVE | SWP_NOSIZE | SWP_FRAMECHANGED);
+            MoveWindow(p.MainWindowHandle, 0, 0, tabOutput.Width, tabOutput.Height, true);
             SendMessage(p.MainWindowHandle, WmPaint, IntPtr.Zero, IntPtr.Zero);
         }
 
@@ -195,9 +382,12 @@ namespace winuake
             m_GlobalHook = Hook.GlobalEvents();
             m_GlobalHook.KeyPress += GlobalHookKeyPress;
 
-            //Detect F12
+            //Detect Ctrl + F12
             m_GlobalHook.OnCombination(new Dictionary<Combination, Action>() {
-                { Combination.TriggeredBy(Keys.F1), GlobalHookKeyF1Press },
+                { Combination.FromString("Control+Shift+F1"), GlobalHookKeyCtrlShiftF1Press },
+            });
+            m_GlobalHook.OnCombination(new Dictionary<Combination, Action>() {
+                { Combination.FromString("Control+F1"), GlobalHookKeyCtrlF1Press },
             });
         }
 
@@ -216,7 +406,7 @@ namespace winuake
                 if (m.WParam.ToInt32() == SC_MINIMIZE)
                 {
                     m.Result = IntPtr.Zero;
-                    GlobalHookKeyF1Press();
+                    GlobalHookKeyCtrlF1Press();
                     return;
                 }
                 else if (m.WParam.ToInt32() == SC_MAXIMIZE)
@@ -282,5 +472,16 @@ namespace winuake
 
         [DllImport("user32.dll")]
         static extern bool RemoveMenu(IntPtr hMenu, uint uPosition, uint uFlags);
+
+        private void btnClose_Click(object sender, EventArgs e)
+        {
+            exiting = true;
+            Application.Exit();
+        }
+
+        private void btnAddTab_Click(object sender, EventArgs e)
+        {
+            addTab();
+        }
     }
 }
