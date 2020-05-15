@@ -6,6 +6,7 @@ using System.Windows.Forms;
 using System.Drawing;
 using Gma.System.MouseKeyHook;
 using System.Collections.Generic;
+using System.Windows.Input;
 
 namespace winuake
 {
@@ -25,7 +26,7 @@ namespace winuake
 
         //Constants for Padding
         private const int PAD_WIDTH = -16;
-        private const int PAD_HEIGHT = -40;
+        private const int PAD_HEIGHT = -10;
 
         //Constants for Window Styles
         private const uint MF_BYPOSITION = 0x400;
@@ -152,13 +153,13 @@ namespace winuake
             {
                 Show();
             }
-            tabCtrl.Height = this.Bounds.Height-15;
-            tabCtrl.Width = this.Bounds.Width;
+            tabCtrl.Height = this.Bounds.Height+12;
+            tabCtrl.Width = this.Bounds.Width+12;
 
             for(int i = 0; i < listOfProcesses.Count; i++)
             {
                 Process p = listOfProcesses[i];
-                MoveWindow(p.MainWindowHandle, 0, 0, tabCtrl.Width + PAD_WIDTH, tabCtrl.Height, true);
+                MoveWindow(p.MainWindowHandle, 0, 0, tabCtrl.Width + PAD_WIDTH, tabCtrl.Height + PAD_HEIGHT, true);
                 SendMessage(p.MainWindowHandle, WmPaint, IntPtr.Zero, IntPtr.Zero);
             }
 
@@ -285,6 +286,8 @@ namespace winuake
             }
             string tabTitle = "Shell" + (tabNum).ToString();
             TabPage newTab = new TabPage(tabTitle);
+            newTab.BorderStyle = BorderStyle.FixedSingle;
+            newTab.BackColor = this.BackColor;
             if (tabCtrl.InvokeRequired)
             {
                 Thread exitThread = new Thread(delegate ()
@@ -305,13 +308,28 @@ namespace winuake
             
         }
 
+        private float getScalingFactor()
+        {
+            Graphics g = Graphics.FromHwnd(IntPtr.Zero);
+            IntPtr desktop = g.GetHdc();
+            int LogicalScreenHeight = GetDeviceCaps(desktop, (int)DeviceCap.VERTRES);
+            int PhysicalScreenHeight = GetDeviceCaps(desktop, (int)DeviceCap.DESKTOPVERTRES);
+
+            float ScreenScalingFactor = (float)PhysicalScreenHeight / (float)LogicalScreenHeight;
+
+            return ScreenScalingFactor; // 1.25 = 125%
+        }
+
         private void frmMain_Load(object sender, EventArgs e)
         {
-            this.Width = Screen.PrimaryScreen.WorkingArea.Width;
+            this.Width = Screen.FromControl(this).Bounds.Width / (int)getScalingFactor();
             this.Height = Screen.FromControl(this).Bounds.Height / 2;
-            tabCtrl.Location = new Point(0, 0);
+            this.BackColor = Color.Red;
+            this.TransparencyKey = Color.Red;
+            tabCtrl.Location = new Point(-9, -9);
             tabCtrl.Height = this.Bounds.Height;
             tabCtrl.Width = this.Bounds.Width;
+            StyleWindow(tabCtrl.Handle);
             this.FormBorderStyle = FormBorderStyle.None;
             this.CenterToScreen();
             this.Top = 0;
@@ -358,8 +376,8 @@ namespace winuake
 
         private void PositionWindow(Process p, TabPage tabOutput)
         {
-            SetWindowPos(p.MainWindowHandle, 0, 0, 0, tabOutput.Bounds.Width, tabOutput.Bounds.Height, SWP_NOMOVE | SWP_NOSIZE | SWP_FRAMECHANGED);
-            MoveWindow(p.MainWindowHandle, 0, 0, tabOutput.Width, tabOutput.Height, true);
+            SetWindowPos(p.MainWindowHandle, -2, -2, 0, tabOutput.Bounds.Width+5, tabOutput.Bounds.Height+5, SWP_NOMOVE | SWP_NOSIZE | SWP_FRAMECHANGED);
+            MoveWindow(p.MainWindowHandle, -2, -2, tabOutput.Width+5, tabOutput.Height+5, true);
             SendMessage(p.MainWindowHandle, WmPaint, IntPtr.Zero, IntPtr.Zero);
         }
 
@@ -374,6 +392,19 @@ namespace winuake
             SetWindowLong(p.MainWindowHandle, GWL_STYLE, style);
             style = GetWindowLong(p.MainWindowHandle, GWL_EXSTYLE);
             SetWindowLong(p.MainWindowHandle, GWL_EXSTYLE, style | WS_EX_DLGMODALFRAME);
+        }
+
+        private void StyleWindow(IntPtr intPtr)
+        {
+            int style = GetWindowLong(intPtr, GWL_STYLE);
+            style = style & ~WS_CAPTION;
+            style = style & ~WS_SYSMENU;
+            style = style & ~WS_THICKFRAME;
+            style = style & ~WS_MINIMIZE;
+            style = style & ~WS_MAXIMIZEBOX;
+            SetWindowLong(intPtr, GWL_STYLE, style);
+            style = GetWindowLong(intPtr, GWL_EXSTYLE);
+            SetWindowLong(intPtr, GWL_EXSTYLE, style | WS_EX_DLGMODALFRAME);
         }
 
         private void Subscribe()
@@ -416,6 +447,16 @@ namespace winuake
                 }
             }
             base.WndProc(ref m);
+        }
+
+        [DllImport("gdi32.dll")]
+        static extern int GetDeviceCaps(IntPtr hdc, int nIndex);
+        public enum DeviceCap
+        {
+            VERTRES = 10,
+            DESKTOPVERTRES = 117,
+
+            // http://pinvoke.net/default.aspx/gdi32/GetDeviceCaps.html
         }
 
         //Set Foreground Window

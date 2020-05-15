@@ -48,7 +48,9 @@
             // btnClose
             // 
             this.btnClose.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnClose.Location = new System.Drawing.Point(1194, 503);
+            this.btnClose.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.btnClose.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnClose.Location = new System.Drawing.Point(1192, 489);
             this.btnClose.Name = "btnClose";
             this.btnClose.Size = new System.Drawing.Size(20, 21);
             this.btnClose.TabIndex = 1;
@@ -59,33 +61,39 @@
             // btnAddTab
             // 
             this.btnAddTab.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnAddTab.Location = new System.Drawing.Point(1168, 503);
+            this.btnAddTab.BackColor = System.Drawing.SystemColors.Desktop;
+            this.btnAddTab.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.btnAddTab.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnAddTab.Location = new System.Drawing.Point(1166, 489);
             this.btnAddTab.Name = "btnAddTab";
             this.btnAddTab.Size = new System.Drawing.Size(20, 21);
             this.btnAddTab.TabIndex = 2;
             this.btnAddTab.Text = "+";
-            this.btnAddTab.UseVisualStyleBackColor = true;
+            this.btnAddTab.UseVisualStyleBackColor = false;
             this.btnAddTab.Click += new System.EventHandler(this.btnAddTab_Click);
             // 
             // tabShell1
             // 
+            this.tabShell1.BackColor = System.Drawing.Color.Transparent;
+            this.tabShell1.ForeColor = System.Drawing.SystemColors.WindowText;
             this.tabShell1.Location = new System.Drawing.Point(4, 4);
             this.tabShell1.Name = "tabShell1";
             this.tabShell1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabShell1.Size = new System.Drawing.Size(839, 249);
+            this.tabShell1.Size = new System.Drawing.Size(1221, 515);
             this.tabShell1.TabIndex = 0;
             this.tabShell1.Text = "Shell 1";
-            this.tabShell1.UseVisualStyleBackColor = true;
             // 
             // tabCtrl
             // 
             this.tabCtrl.Alignment = System.Windows.Forms.TabAlignment.Bottom;
+            this.tabCtrl.AllowDrop = true;
             this.tabCtrl.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.tabCtrl.Controls.Add(this.tabShell1);
-            this.tabCtrl.Location = new System.Drawing.Point(255, 161);
+            this.tabCtrl.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.tabCtrl.Location = new System.Drawing.Point(0, -18);
             this.tabCtrl.Name = "tabCtrl";
             this.tabCtrl.SelectedIndex = 0;
-            this.tabCtrl.Size = new System.Drawing.Size(847, 275);
+            this.tabCtrl.Size = new System.Drawing.Size(1229, 541);
             this.tabCtrl.TabIndex = 0;
             // 
             // frmMain
@@ -93,10 +101,11 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.InfoText;
-            this.ClientSize = new System.Drawing.Size(1226, 536);
+            this.ClientSize = new System.Drawing.Size(1224, 522);
             this.Controls.Add(this.btnAddTab);
             this.Controls.Add(this.btnClose);
             this.Controls.Add(this.tabCtrl);
+            this.ForeColor = System.Drawing.SystemColors.ControlLightLight;
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Margin = new System.Windows.Forms.Padding(2);
