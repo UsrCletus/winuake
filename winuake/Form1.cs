@@ -483,5 +483,10 @@ namespace winuake
         {
             addTab();
         }
+
+        private void notifyIcon_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            GlobalHookKeyCtrlF1Press();
+        }
     }
 }

@@ -9,3 +9,4 @@ C:\Users\Mike\source\repos\winuake\winuake\obj\Release\winuake.csproj.CoreCompil
 C:\Users\Mike\source\repos\winuake\winuake\obj\Release\winuake.csproj.CopyComplete
 C:\Users\Mike\source\repos\winuake\winuake\obj\Release\winuake.exe
 C:\Users\Mike\source\repos\winuake\winuake\obj\Release\winuake.pdb
+C:\Users\Mike\source\repos\winuake\winuake\obj\Release\winuake.csprojAssemblyReference.cache
