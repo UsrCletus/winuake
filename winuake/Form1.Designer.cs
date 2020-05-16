@@ -50,7 +50,7 @@
             this.btnClose.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.btnClose.Cursor = System.Windows.Forms.Cursors.Hand;
             this.btnClose.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnClose.Location = new System.Drawing.Point(1192, 489);
+            this.btnClose.Location = new System.Drawing.Point(1386, 619);
             this.btnClose.Name = "btnClose";
             this.btnClose.Size = new System.Drawing.Size(20, 21);
             this.btnClose.TabIndex = 1;
@@ -64,7 +64,7 @@
             this.btnAddTab.BackColor = System.Drawing.SystemColors.Desktop;
             this.btnAddTab.Cursor = System.Windows.Forms.Cursors.Hand;
             this.btnAddTab.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnAddTab.Location = new System.Drawing.Point(1166, 489);
+            this.btnAddTab.Location = new System.Drawing.Point(1360, 619);
             this.btnAddTab.Name = "btnAddTab";
             this.btnAddTab.Size = new System.Drawing.Size(20, 21);
             this.btnAddTab.TabIndex = 2;
@@ -79,7 +79,7 @@
             this.tabShell1.Location = new System.Drawing.Point(4, 4);
             this.tabShell1.Name = "tabShell1";
             this.tabShell1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabShell1.Size = new System.Drawing.Size(1221, 515);
+            this.tabShell1.Size = new System.Drawing.Size(1089, 414);
             this.tabShell1.TabIndex = 0;
             this.tabShell1.Text = "Shell 1";
             // 
@@ -90,10 +90,10 @@
             this.tabCtrl.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.tabCtrl.Controls.Add(this.tabShell1);
             this.tabCtrl.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.tabCtrl.Location = new System.Drawing.Point(0, -18);
+            this.tabCtrl.Location = new System.Drawing.Point(97, 47);
             this.tabCtrl.Name = "tabCtrl";
             this.tabCtrl.SelectedIndex = 0;
-            this.tabCtrl.Size = new System.Drawing.Size(1229, 541);
+            this.tabCtrl.Size = new System.Drawing.Size(1097, 440);
             this.tabCtrl.TabIndex = 0;
             // 
             // frmMain
@@ -101,7 +101,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.InfoText;
-            this.ClientSize = new System.Drawing.Size(1224, 522);
+            this.ClientSize = new System.Drawing.Size(1418, 652);
             this.Controls.Add(this.btnAddTab);
             this.Controls.Add(this.btnClose);
             this.Controls.Add(this.tabCtrl);

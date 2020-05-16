@@ -6,7 +6,6 @@ using System.Windows.Forms;
 using System.Drawing;
 using Gma.System.MouseKeyHook;
 using System.Collections.Generic;
-using System.Windows.Input;
 
 namespace winuake
 {
@@ -31,6 +30,7 @@ namespace winuake
         //Constants for Window Styles
         private const uint MF_BYPOSITION = 0x400;
         private const uint MF_REMOVE = 0x1000;
+        public const int WS_SIZEBOX = 0x00040000;
         private const int GWL_STYLE = -16;
         private const int GWL_EXSTYLE = -20;
         public const int WS_CHILD = 0x40000000; //Child Window
@@ -68,8 +68,63 @@ namespace winuake
         private const int SC_MINIMIZE = 0xf020;
         private const int SC_MAXIMIZE = 0xf030;
 
-        //Keyboard Combination Vars
-        //private 
+        //Set Foreground Window
+        [DllImport("user32.dll")]
+        static extern bool SetForegroundWindow(IntPtr hWnd);
+
+        //Set Focus to Window
+        [DllImport("user32.dll")]
+        private static extern IntPtr SetFocus(IntPtr hwnd);
+
+        //Move Window
+        [DllImport("user32.dll")]
+        private static extern bool MoveWindow(IntPtr hwnd, int x, int y, int width, int height, bool repaint);
+
+        //Sets a window to be a child window of another window
+        [DllImport("USER32.DLL")]
+        public static extern IntPtr SetParent(IntPtr hWndChild, IntPtr hWndNewParent);
+
+        //Sets window attributes
+        [DllImport("USER32.DLL")]
+        public static extern int SetWindowLong(IntPtr hWnd, int nIndex, int dwNewLong);
+
+        //Gets window attributes
+        [DllImport("USER32.DLL")]
+        public static extern int GetWindowLong(IntPtr hWnd, int nIndex);
+
+        //Finds a window by class name
+        [DllImport("USER32.DLL")]
+        public static extern IntPtr FindWindow(string lpClassName, string lpWindowName);
+
+        //Finds a window by it's caption
+        [DllImport("user32.dll", EntryPoint = "FindWindow", SetLastError = true)]
+        static extern IntPtr FindWindowByCaption(IntPtr ZeroOnly, string lpWindowName);
+
+        //Redraws a window
+        [DllImport("user32.dll")]
+        static extern bool RedrawWindow(IntPtr hWnd, IntPtr lprcUpdate, IntPtr hrgnUpdate, uint flags);
+
+        //Sends a message to a Window
+        [DllImport("User32.dll")]
+        public static extern Int64 SendMessage(IntPtr hWnd, uint msg, IntPtr wParam, IntPtr lParam);
+
+        [DllImport("user32.dll")]
+        static extern bool SetWindowPos(IntPtr hWnd, int hwndInsertAfter, int X, int Y, int cx, int cy, int wFlags);
+
+        [DllImport("user32.dll")]
+        static extern IntPtr GetMenu(IntPtr hWnd);
+
+        [DllImport("user32.dll")]
+        static extern int GetMenuItemCount(IntPtr hMenu);
+
+        [DllImport("user32.dll")]
+        static extern bool DrawMenuBar(IntPtr hWnd);
+
+        [DllImport("user32.dll")]
+        static extern bool RemoveMenu(IntPtr hMenu, uint uPosition, uint uFlags);
+
+        [DllImport("gdi32.dll")]
+        static extern int GetDeviceCaps(IntPtr hdc, int nIndex);
 
         public frmMain()
         {
@@ -130,11 +185,17 @@ namespace winuake
                     {
                         Thread exitThread = new Thread(delegate ()
                         {
-                            tabCtrl.Invoke(new MethodInvoker(delegate
+                            try
                             {
-                                tabCtrl.TabPages.Clear();
-                                addTab();
-                            }));
+                                tabCtrl.Invoke(new MethodInvoker(delegate
+                                {
+                                    tabCtrl.TabPages.Clear();
+                                    addTab();
+                                }));
+                            } catch (Exception err)
+                            {
+                                Console.WriteLine("Exception: " + err.ToString());
+                            }
                         });
                         exitThread.Start();
                     }
@@ -153,13 +214,13 @@ namespace winuake
             {
                 Show();
             }
-            tabCtrl.Height = this.Bounds.Height+12;
-            tabCtrl.Width = this.Bounds.Width+12;
+            tabCtrl.Height = this.Bounds.Height - 20;
+            tabCtrl.Width = this.Bounds.Width + 8;
 
             for(int i = 0; i < listOfProcesses.Count; i++)
             {
                 Process p = listOfProcesses[i];
-                MoveWindow(p.MainWindowHandle, 0, 0, tabCtrl.Width + PAD_WIDTH, tabCtrl.Height + PAD_HEIGHT, true);
+                MoveWindow(p.MainWindowHandle, 0, 0, tabCtrl.Width, tabCtrl.Height, true);
                 SendMessage(p.MainWindowHandle, WmPaint, IntPtr.Zero, IntPtr.Zero);
             }
 
@@ -249,11 +310,33 @@ namespace winuake
                 SetParent(listOfProcesses[tabCtrl.TabPages.Count - 1].MainWindowHandle, tabCtrl.TabPages[tabCtrl.TabPages.Count - 1].Handle);
                 PositionWindow(listOfProcesses[tabCtrl.TabPages.Count - 1], tabCtrl.TabPages[tabCtrl.TabPages.Count - 1]);
                 SetForegroundWindow(listOfProcesses[tabCtrl.TabPages.Count - 1].MainWindowHandle);
-            }
+            }  
+        }
 
-            //Position the Window
-            
-            
+        private void tabCtrl_DrawItem(object sender, DrawItemEventArgs e)
+        {
+            //get tabpage
+            TabPage tabPages = tabCtrl.TabPages[e.Index];
+            Graphics graphics = e.Graphics;
+            Brush textBrush = new SolidBrush(Color.Green); //fore color brush
+            Rectangle tabBounds = tabCtrl.GetTabRect(e.Index);
+            if (e.State == DrawItemState.Selected)
+            {
+                graphics.FillRectangle(Brushes.Black, e.Bounds); //fill background color
+            }
+            else
+            {
+                textBrush = new SolidBrush(Color.Black);
+                e.DrawBackground();
+            }
+            Font tabFont = new Font("Book Antiqua", 12, FontStyle.Italic | FontStyle.Bold, GraphicsUnit.Pixel);
+            StringFormat strFormat = new StringFormat();
+            strFormat.Alignment = StringAlignment.Near;
+            strFormat.LineAlignment = StringAlignment.Near;
+            // draw text
+            graphics.DrawString(tabPages.Text, tabFont, textBrush, tabBounds, new StringFormat(strFormat));
+            graphics.Dispose();
+            textBrush.Dispose();
         }
 
         private void addTab()
@@ -286,8 +369,8 @@ namespace winuake
             }
             string tabTitle = "Shell" + (tabNum).ToString();
             TabPage newTab = new TabPage(tabTitle);
-            newTab.BorderStyle = BorderStyle.FixedSingle;
             newTab.BackColor = this.BackColor;
+            newTab.BorderStyle = BorderStyle.None;
             if (tabCtrl.InvokeRequired)
             {
                 Thread exitThread = new Thread(delegate ()
@@ -314,22 +397,18 @@ namespace winuake
             IntPtr desktop = g.GetHdc();
             int LogicalScreenHeight = GetDeviceCaps(desktop, (int)DeviceCap.VERTRES);
             int PhysicalScreenHeight = GetDeviceCaps(desktop, (int)DeviceCap.DESKTOPVERTRES);
-
             float ScreenScalingFactor = (float)PhysicalScreenHeight / (float)LogicalScreenHeight;
-
             return ScreenScalingFactor; // 1.25 = 125%
         }
 
         private void frmMain_Load(object sender, EventArgs e)
         {
             this.Width = Screen.FromControl(this).Bounds.Width / (int)getScalingFactor();
-            this.Height = Screen.FromControl(this).Bounds.Height / 2;
+            this.Height = Screen.FromControl(this).Bounds.Height /2;
             this.BackColor = Color.Red;
             this.TransparencyKey = Color.Red;
-            tabCtrl.Location = new Point(-9, -9);
-            tabCtrl.Height = this.Bounds.Height;
-            tabCtrl.Width = this.Bounds.Width;
-            StyleWindow(tabCtrl.Handle);
+            tabCtrl.Location = new Point(-4, -4);
+            //tabCtrl.DrawMode = TabDrawMode.OwnerDrawFixed;
             this.FormBorderStyle = FormBorderStyle.None;
             this.CenterToScreen();
             this.Top = 0;
@@ -348,14 +427,10 @@ namespace winuake
             {
                 this.WindowState = FormWindowState.Normal;
                 Show();
-                //PositionWindow(p);
-                //tabOutput.Focus();
-                //SetForegroundWindow(p.MainWindowHandle);
                 notifyIcon.Visible = false;
             }
             else
             {
-                //SendMessage(p.MainWindowHandle, WM_KILLFOCUS, IntPtr.Zero, IntPtr.Zero);
                 Hide();
                 this.WindowState = FormWindowState.Minimized;
                 notifyIcon.Visible = true;
@@ -364,9 +439,19 @@ namespace winuake
 
         private void GlobalHookKeyCtrlShiftF1Press()
         {
-            //MessageBox.Show("Triggered");
-            //tabOutput.Focus();
-            //SendMessage(p.MainWindowHandle, WM_KILLFOCUS, IntPtr.Zero, IntPtr.Zero);
+            //Do stuff here
+            if (this.WindowState == FormWindowState.Minimized)
+            {
+                this.WindowState = FormWindowState.Normal;
+                Show();
+                notifyIcon.Visible = false;
+            }
+            else
+            {
+                Hide();
+                this.WindowState = FormWindowState.Minimized;
+                notifyIcon.Visible = true;
+            }
         }
 
         private void GlobalHookKeyPress(object sender, KeyPressEventArgs e)
@@ -376,8 +461,8 @@ namespace winuake
 
         private void PositionWindow(Process p, TabPage tabOutput)
         {
-            SetWindowPos(p.MainWindowHandle, -2, -2, 0, tabOutput.Bounds.Width+5, tabOutput.Bounds.Height+5, SWP_NOMOVE | SWP_NOSIZE | SWP_FRAMECHANGED);
-            MoveWindow(p.MainWindowHandle, -2, -2, tabOutput.Width+5, tabOutput.Height+5, true);
+            SetWindowPos(p.MainWindowHandle, 0, 0, 0, tabOutput.Bounds.Width, tabOutput.Bounds.Height, SWP_NOMOVE | SWP_NOSIZE | SWP_FRAMECHANGED);
+            MoveWindow(p.MainWindowHandle, 0, 0, tabOutput.Width, tabOutput.Height, true);
             SendMessage(p.MainWindowHandle, WmPaint, IntPtr.Zero, IntPtr.Zero);
         }
 
@@ -391,7 +476,6 @@ namespace winuake
             style = style & ~WS_MAXIMIZEBOX;
             SetWindowLong(p.MainWindowHandle, GWL_STYLE, style);
             style = GetWindowLong(p.MainWindowHandle, GWL_EXSTYLE);
-            SetWindowLong(p.MainWindowHandle, GWL_EXSTYLE, style | WS_EX_DLGMODALFRAME);
         }
 
         private void StyleWindow(IntPtr intPtr)
@@ -404,7 +488,6 @@ namespace winuake
             style = style & ~WS_MAXIMIZEBOX;
             SetWindowLong(intPtr, GWL_STYLE, style);
             style = GetWindowLong(intPtr, GWL_EXSTYLE);
-            SetWindowLong(intPtr, GWL_EXSTYLE, style | WS_EX_DLGMODALFRAME);
         }
 
         private void Subscribe()
@@ -412,11 +495,10 @@ namespace winuake
             // Note: for the application hook, use the Hook.AppEvents() instead
             m_GlobalHook = Hook.GlobalEvents();
             m_GlobalHook.KeyPress += GlobalHookKeyPress;
-
-            //Detect Ctrl + F12
             m_GlobalHook.OnCombination(new Dictionary<Combination, Action>() {
-                { Combination.FromString("Control+Shift+F1"), GlobalHookKeyCtrlShiftF1Press },
+                { Combination.FromString("Control+F2"), GlobalHookKeyCtrlShiftF1Press },
             });
+            //Detect Ctrl + F1
             m_GlobalHook.OnCombination(new Dictionary<Combination, Action>() {
                 { Combination.FromString("Control+F1"), GlobalHookKeyCtrlF1Press },
             });
@@ -425,8 +507,6 @@ namespace winuake
         private void Unsubscribe()
         {
             m_GlobalHook.KeyPress -= GlobalHookKeyPress;
-
-            //It is recommened to dispose it
             m_GlobalHook.Dispose();
         }
 
@@ -443,14 +523,13 @@ namespace winuake
                 else if (m.WParam.ToInt32() == SC_MAXIMIZE)
                 {
                     //my code for the maximize event
+                    GlobalHookKeyCtrlShiftF1Press();
                     return;
                 }
             }
             base.WndProc(ref m);
         }
 
-        [DllImport("gdi32.dll")]
-        static extern int GetDeviceCaps(IntPtr hdc, int nIndex);
         public enum DeviceCap
         {
             VERTRES = 10,
@@ -458,61 +537,6 @@ namespace winuake
 
             // http://pinvoke.net/default.aspx/gdi32/GetDeviceCaps.html
         }
-
-        //Set Foreground Window
-        [DllImport("user32.dll")]
-        static extern bool SetForegroundWindow(IntPtr hWnd);
-
-        //Set Focus to Window
-        [DllImport("user32.dll")]
-        private static extern IntPtr SetFocus(IntPtr hwnd);
-
-        //Move Window
-        [DllImport("user32.dll")]
-        private static extern bool MoveWindow(IntPtr hwnd, int x, int y, int width, int height, bool repaint);
-
-        //Sets a window to be a child window of another window
-        [DllImport("USER32.DLL")]
-        public static extern IntPtr SetParent(IntPtr hWndChild, IntPtr hWndNewParent);
-
-        //Sets window attributes
-        [DllImport("USER32.DLL")]
-        public static extern int SetWindowLong(IntPtr hWnd, int nIndex, int dwNewLong);
-
-        //Gets window attributes
-        [DllImport("USER32.DLL")]
-        public static extern int GetWindowLong(IntPtr hWnd, int nIndex);
-
-        //Finds a window by class name
-        [DllImport("USER32.DLL")]
-        public static extern IntPtr FindWindow(string lpClassName, string lpWindowName);
-
-        //Finds a window by it's caption
-        [DllImport("user32.dll", EntryPoint = "FindWindow", SetLastError = true)]
-        static extern IntPtr FindWindowByCaption(IntPtr ZeroOnly, string lpWindowName);
-
-        //Redraws a window
-        [DllImport("user32.dll")]
-        static extern bool RedrawWindow(IntPtr hWnd, IntPtr lprcUpdate, IntPtr hrgnUpdate, uint flags);
-
-        //Sends a message to a Window
-        [DllImport("User32.dll")]
-        public static extern Int64 SendMessage(IntPtr hWnd, uint msg, IntPtr wParam, IntPtr lParam);
-
-        [DllImport("user32.dll")]
-        static extern bool SetWindowPos(IntPtr hWnd, int hwndInsertAfter, int X, int Y, int cx, int cy, int wFlags);
-
-        [DllImport("user32.dll")]
-        static extern IntPtr GetMenu(IntPtr hWnd);
-
-        [DllImport("user32.dll")]
-        static extern int GetMenuItemCount(IntPtr hMenu);
-
-        [DllImport("user32.dll")]
-        static extern bool DrawMenuBar(IntPtr hWnd);
-
-        [DllImport("user32.dll")]
-        static extern bool RemoveMenu(IntPtr hMenu, uint uPosition, uint uFlags);
 
         private void btnClose_Click(object sender, EventArgs e)
         {
