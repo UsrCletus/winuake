@@ -57,6 +57,9 @@ namespace winuake
         private const int WM_SYSCOMMAND = 0x0112;
         private const int SC_MINIMIZE = 0xf020;
         private const int SC_MAXIMIZE = 0xf030;
+        //constants for hiding and showing windows
+        private const int SW_SHOW = 5;
+        private const int SW_HIDE = 0;
 
         //Set Foreground Window
         [DllImport("user32.dll")]
@@ -100,6 +103,8 @@ namespace winuake
         static extern bool RemoveMenu(IntPtr hMenu, uint uPosition, uint uFlags);
         [DllImport("gdi32.dll")]
         static extern int GetDeviceCaps(IntPtr hdc, int nIndex);
+        [DllImport("user32.dll")]
+        private static extern bool ShowWindow(IntPtr hwnd, int nCmdShow);
 
         public frmMain()
         {
@@ -112,11 +117,12 @@ namespace winuake
             p.StartInfo.FileName = shell;
             p.StartInfo.UseShellExecute = false;
             p.StartInfo.WorkingDirectory = startDir;
-            p.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
             p.EnableRaisingEvents = true;
             p.Exited += new EventHandler((s, e) => ExitFunk(s, e, tabOutput));
             p.Start();
+            ShowWindow(p.MainWindowHandle,SW_HIDE);
             Thread.Sleep(500);
+            //Hide Window
             //Set Window Style
             StyleWindow(p);
             //Focus on new Tab
@@ -173,8 +179,6 @@ namespace winuake
             }
             string tabTitle = "Shell" + (tabNum).ToString();
             TabPage newTab = new TabPage(tabTitle);
-            newTab.BackColor = this.BackColor;
-            newTab.BorderStyle = BorderStyle.None;
             if (tabCtrl.InvokeRequired)
             {
                 Thread exitThread = new Thread(delegate ()
@@ -289,8 +293,8 @@ namespace winuake
             {
                 Show();
             }
-            tabCtrl.Height = this.Bounds.Height - 20;
-            tabCtrl.Width = this.Bounds.Width + 8;
+            tabCtrl.Height = this.Bounds.Height - 35;
+            tabCtrl.Width = this.Bounds.Width;
             for(int i = 0; i < listOfProcesses.Count; i++)
             {
                 Process p = listOfProcesses[i];
@@ -343,9 +347,7 @@ namespace winuake
             this.Width = Screen.FromControl(this).Bounds.Width / (int)getScalingFactor();
             this.Height = Screen.FromControl(this).Bounds.Height /2;
             this.BackColor = Color.Black;
-            //this.TransparencyKey = Color.Red;
-            tabCtrl.Location = new Point(-4, -4);
-            //tabCtrl.DrawMode = TabDrawMode.OwnerDrawFixed;
+            tabCtrl.Location = new Point(0, 0);
             this.FormBorderStyle = FormBorderStyle.None;
             this.CenterToScreen();
             this.Top = 0;
@@ -445,31 +447,6 @@ namespace winuake
                 { Combination.FromString("Control+F1"), GlobalHookKeyCtrlF1Press },
             });
         }
-        private void tabCtrl_DrawItem(object sender, DrawItemEventArgs e)
-        {
-            //get tabpage
-            TabPage tabPages = tabCtrl.TabPages[e.Index];
-            Graphics graphics = e.Graphics;
-            Brush textBrush = new SolidBrush(Color.Green); //fore color brush
-            Rectangle tabBounds = tabCtrl.GetTabRect(e.Index);
-            if (e.State == DrawItemState.Selected)
-            {
-                graphics.FillRectangle(Brushes.Black, e.Bounds); //fill background color
-            }
-            else
-            {
-                textBrush = new SolidBrush(Color.Black);
-                e.DrawBackground();
-            }
-            Font tabFont = new Font("Book Antiqua", 12, FontStyle.Italic | FontStyle.Bold, GraphicsUnit.Pixel);
-            StringFormat strFormat = new StringFormat();
-            strFormat.Alignment = StringAlignment.Near;
-            strFormat.LineAlignment = StringAlignment.Near;
-            // draw text
-            graphics.DrawString(tabPages.Text, tabFont, textBrush, tabBounds, new StringFormat(strFormat));
-            graphics.Dispose();
-            textBrush.Dispose();
-        }
         private void Unsubscribe()
         {
             m_GlobalHook.KeyPress -= GlobalHookKeyPress;
@@ -493,6 +470,11 @@ namespace winuake
                 }
             }
             base.WndProc(ref m);
+        }
+
+        private void tabCtrl_TabClosing(object sender, TabControlCancelEventArgs e)
+        {
+            ExitFunk(sender, e,tabCtrl.SelectedTab);
         }
     }
 }
