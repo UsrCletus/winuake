@@ -342,8 +342,8 @@ namespace winuake
         {
             this.Width = Screen.FromControl(this).Bounds.Width / (int)getScalingFactor();
             this.Height = Screen.FromControl(this).Bounds.Height /2;
-            this.BackColor = Color.Red;
-            this.TransparencyKey = Color.Red;
+            this.BackColor = Color.Black;
+            //this.TransparencyKey = Color.Red;
             tabCtrl.Location = new Point(-4, -4);
             //tabCtrl.DrawMode = TabDrawMode.OwnerDrawFixed;
             this.FormBorderStyle = FormBorderStyle.None;
