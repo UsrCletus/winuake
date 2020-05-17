@@ -351,15 +351,16 @@ namespace winuake
         }
         private void frmMain_Load(object sender, EventArgs e)
         {
-            this.Width = Screen.FromControl(this).Bounds.Width / (int)getScalingFactor();
-            this.Height = Screen.FromControl(this).Bounds.Height /2;
             this.BackColor = Color.Black;
+            mainMenu.Opacity = this.Opacity;
             tabCtrl.Location = new Point(0, 0);
             this.FormBorderStyle = FormBorderStyle.None;
-            this.CenterToScreen();
-            this.Top = 0;
             tabCtrl.TabPages.Clear();
             addTab();
+            this.Width = Screen.FromControl(this).Bounds.Width / (int)getScalingFactor();
+            this.Height = Screen.FromControl(this).Bounds.Height / 2;
+            this.CenterToScreen();
+            this.Top = 0;
         }
         private void frmMain_SizeChanged(object sender, EventArgs e)
         {
@@ -376,20 +377,23 @@ namespace winuake
         }
         private void GlobalHookKeyCtrlF1Press()
         {
-            this.lastState = this.WindowState;
             if (this.WindowState == FormWindowState.Minimized)
             {
-                this.WindowState = this.lastState;
+                this.WindowState = FormWindowState.Normal;
                 Show();
+                this.Width = Screen.FromControl(this).Bounds.Width / (int)getScalingFactor();
+                this.Height = Screen.FromControl(this).Bounds.Height / 2;
+                this.CenterToScreen();
+                this.Top = 0;
                 this.Focus();
                 notifyIcon.Visible = false;
+                this.lastState = this.WindowState;
             }
             else
             {
                 Hide();
                 this.WindowState = FormWindowState.Minimized;
                 this.lastState = this.WindowState;
-                notifyIcon.Visible = true;
             }
         }
         private void GlobalHookKeyCtrlShiftF1Press()
@@ -537,27 +541,42 @@ namespace winuake
 
         private void pctHide_MouseEnter(object sender, EventArgs e)
         {
-            pctHide.Image = Properties.Resources.hide_black_filled_transparent;
+            pctHide.Image = Properties.Resources.hide_black_transparent;
         }
 
         private void pctHide_MouseLeave(object sender, EventArgs e)
         {
-            pctHide.Image = Properties.Resources.hide_black_transparent;
+            pctHide.Image = Properties.Resources.hide_black_filled_transparent;
         }
 
         private void pctAdd_MouseEnter(object sender, EventArgs e)
         {
-            pctAdd.Image = Properties.Resources.add_black_filled_transparent;
+            pctAdd.Image = Properties.Resources.add_black_transparent;
         }
 
         private void pctAdd_MouseLeave(object sender, EventArgs e)
         {
-            pctAdd.Image = Properties.Resources.add_black_transparent;
+            pctAdd.Image = Properties.Resources.add_black_filled_transparent;
         }
 
         private void pctAdd_Click(object sender, EventArgs e)
         {
             addTab();
+        }
+
+        private void pctMenu_Click(object sender, EventArgs e)
+        {
+            mainMenu.Show(pctMenu,new Point(0, pctMenu.Height));
+        }
+
+        private void pctMenu_MouseEnter(object sender, EventArgs e)
+        {
+            pctMenu.Image = Properties.Resources.menu_black_transparent;
+        }
+
+        private void pctMenu_MouseLeave(object sender, EventArgs e)
+        {
+            pctMenu.Image = Properties.Resources.menu_black_filled_transparent;
         }
     }
 }

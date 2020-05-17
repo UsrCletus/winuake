@@ -133,6 +133,26 @@ namespace winuake.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap menu_black_filled_transparent {
+            get {
+                object obj = ResourceManager.GetObject("menu_black_filled_transparent", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap menu_black_transparent {
+            get {
+                object obj = ResourceManager.GetObject("menu_black_transparent", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap minimize_black_transparent {
             get {
                 object obj = ResourceManager.GetObject("minimize_black_transparent", resourceCulture);
