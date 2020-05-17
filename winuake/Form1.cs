@@ -61,6 +61,12 @@ namespace winuake
         private const int SW_SHOW = 5;
         private const int SW_HIDE = 0;
 
+        private FormWindowState lastState;
+
+        [DllImport("user32.dll")]
+        static extern bool DrawMenuBar(IntPtr hWnd);
+        [DllImport("user32.dll")]
+        private static extern bool SetProcessDPIAware();
         //Set Foreground Window
         [DllImport("user32.dll")]
         static extern bool SetForegroundWindow(IntPtr hWnd);
@@ -98,16 +104,16 @@ namespace winuake
         [DllImport("user32.dll")]
         static extern int GetMenuItemCount(IntPtr hMenu);
         [DllImport("user32.dll")]
-        static extern bool DrawMenuBar(IntPtr hWnd);
-        [DllImport("user32.dll")]
         static extern bool RemoveMenu(IntPtr hMenu, uint uPosition, uint uFlags);
         [DllImport("gdi32.dll")]
         static extern int GetDeviceCaps(IntPtr hdc, int nIndex);
         [DllImport("user32.dll")]
-        private static extern bool ShowWindow(IntPtr hwnd, int nCmdShow);
+        private static extern bool ShowWindow(IntPtr hwnd, int nCmdShow);        
 
         public frmMain()
         {
+            if (Environment.OSVersion.Version.Major >= 6)
+                SetProcessDPIAware();
             InitializeComponent();
             Subscribe();
         }
@@ -287,18 +293,19 @@ namespace winuake
                 }
             }
         }
-        private void FixSize()
+        private void fixSize()
         {
             if (this.WindowState == FormWindowState.Normal)
             {
                 Show();
             }
-            tabCtrl.Height = this.Bounds.Height - 35;
+            tabCtrl.Height = this.Bounds.Height - 33;
             tabCtrl.Width = this.Bounds.Width;
             for(int i = 0; i < listOfProcesses.Count; i++)
             {
                 Process p = listOfProcesses[i];
                 MoveWindow(p.MainWindowHandle, 0, 0, tabCtrl.Width, tabCtrl.Height, true);
+                PositionWindow(p, tabCtrl.SelectedTab);
                 SendMessage(p.MainWindowHandle, WmPaint, IntPtr.Zero, IntPtr.Zero);
             }
         }
@@ -356,7 +363,7 @@ namespace winuake
         }
         private void frmMain_SizeChanged(object sender, EventArgs e)
         {
-                FixSize();
+                fixSize();
         }
         private float getScalingFactor()
         {
@@ -369,33 +376,34 @@ namespace winuake
         }
         private void GlobalHookKeyCtrlF1Press()
         {
+            this.lastState = this.WindowState;
             if (this.WindowState == FormWindowState.Minimized)
             {
-                this.WindowState = FormWindowState.Normal;
+                this.WindowState = this.lastState;
                 Show();
+                this.Focus();
                 notifyIcon.Visible = false;
             }
             else
             {
                 Hide();
                 this.WindowState = FormWindowState.Minimized;
+                this.lastState = this.WindowState;
                 notifyIcon.Visible = true;
             }
         }
         private void GlobalHookKeyCtrlShiftF1Press()
         {
             //Do stuff here
-            if (this.WindowState == FormWindowState.Minimized)
+            if (this.WindowState == FormWindowState.Normal)
             {
-                this.WindowState = FormWindowState.Normal;
-                Show();
-                notifyIcon.Visible = false;
+                this.WindowState = FormWindowState.Maximized;
+                this.lastState = this.WindowState;
             }
             else
             {
-                Hide();
-                this.WindowState = FormWindowState.Minimized;
-                notifyIcon.Visible = true;
+                this.WindowState = FormWindowState.Normal;
+                this.lastState = this.WindowState;
             }
         }
         private void GlobalHookKeyPress(object sender, KeyPressEventArgs e)
@@ -475,6 +483,81 @@ namespace winuake
         private void tabCtrl_TabClosing(object sender, TabControlCancelEventArgs e)
         {
             ExitFunk(sender, e,tabCtrl.SelectedTab);
+        }
+
+        private void ptcClose_MouseEnter(object sender, EventArgs e)
+        {
+            ptcClose.Image = Properties.Resources.close_red;
+        }
+
+        private void ptcClose_MouseLeave(object sender, EventArgs e)
+        {
+            ptcClose.Image = Properties.Resources.close_black_transparent;
+        }
+
+        private void ptcClose_Click(object sender, EventArgs e)
+        {
+            this.exiting = true;
+            Application.Exit();
+        }
+
+        private void pctToggle_MouseEnter(object sender, EventArgs e)
+        {
+            if (this.WindowState == FormWindowState.Maximized)
+            {
+                pctToggle.Image = Properties.Resources.minimize_black_transparent;
+            }
+            else
+            {
+                pctToggle.Image = Properties.Resources.maximize_black_transparent;
+            }
+        }
+
+        private void pctToggle_MouseLeave(object sender, EventArgs e)
+        {
+            if (this.WindowState == FormWindowState.Maximized)
+            {
+                pctToggle.Image = Properties.Resources.maximize_black_transparent;
+            }
+            else
+            {
+                pctToggle.Image = Properties.Resources.minimize_black_transparent;
+            }
+        }
+
+        private void pctToggle_Click(object sender, EventArgs e)
+        {
+            GlobalHookKeyCtrlShiftF1Press();
+        }
+
+        private void pctHide_Click(object sender, EventArgs e)
+        {
+            GlobalHookKeyCtrlF1Press();
+        }
+
+        private void pctHide_MouseEnter(object sender, EventArgs e)
+        {
+            pctHide.Image = Properties.Resources.hide_black_filled_transparent;
+        }
+
+        private void pctHide_MouseLeave(object sender, EventArgs e)
+        {
+            pctHide.Image = Properties.Resources.hide_black_transparent;
+        }
+
+        private void pctAdd_MouseEnter(object sender, EventArgs e)
+        {
+            pctAdd.Image = Properties.Resources.add_black_filled_transparent;
+        }
+
+        private void pctAdd_MouseLeave(object sender, EventArgs e)
+        {
+            pctAdd.Image = Properties.Resources.add_black_transparent;
+        }
+
+        private void pctAdd_Click(object sender, EventArgs e)
+        {
+            addTab();
         }
     }
 }

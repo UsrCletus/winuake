@@ -10,3 +10,5 @@ C:\Users\Mike\source\repos\winuake\winuake\obj\Debug\winuake.exe
 C:\Users\Mike\source\repos\winuake\winuake\obj\Debug\winuake.pdb
 C:\Users\Mike\source\repos\winuake\winuake\bin\Debug\Gma.System.MouseKeyHook.dll
 C:\Users\Mike\source\repos\winuake\winuake\obj\Debug\winuake.csproj.CopyComplete
+C:\Users\Mike\source\repos\winuake\winuake\bin\Debug\Dotnetrix.TabControl.dll
+C:\Users\Mike\source\repos\winuake\winuake\bin\Debug\TabControlEX.dll
