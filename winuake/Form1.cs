@@ -380,11 +380,9 @@ namespace winuake
             if (this.WindowState == FormWindowState.Minimized)
             {
                 this.WindowState = FormWindowState.Normal;
+                resizeForm();
                 Show();
-                this.Width = Screen.FromControl(this).Bounds.Width / (int)getScalingFactor();
-                this.Height = Screen.FromControl(this).Bounds.Height / 2;
-                this.CenterToScreen();
-                this.Top = 0;
+                resizeForm();
                 this.Focus();
                 notifyIcon.Visible = false;
                 this.lastState = this.WindowState;
@@ -407,6 +405,7 @@ namespace winuake
             else
             {
                 this.WindowState = FormWindowState.Normal;
+                resizeForm();
                 this.lastState = this.WindowState;
             }
         }
@@ -424,6 +423,15 @@ namespace winuake
             MoveWindow(p.MainWindowHandle, 0, 0, tabOutput.Width, tabOutput.Height, true);
             SendMessage(p.MainWindowHandle, WmPaint, IntPtr.Zero, IntPtr.Zero);
         }
+
+        private void resizeForm()
+        {
+            this.Width = Screen.FromControl(this).Bounds.Width / (int)getScalingFactor();
+            this.Height = Screen.FromControl(this).Bounds.Height / 2;
+            this.CenterToScreen();
+            this.Top = 0;
+        }
+
         private void StyleWindow(Process p)
         {
             int style = GetWindowLong(p.MainWindowHandle, GWL_STYLE);
