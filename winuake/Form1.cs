@@ -61,6 +61,8 @@ namespace winuake
         private const int SW_SHOW = 5;
         private const int SW_HIDE = 0;
 
+        private bool menuOpen = false;
+
         private FormWindowState lastState;
 
         [DllImport("user32.dll")]
@@ -112,8 +114,6 @@ namespace winuake
 
         public frmMain()
         {
-            if (Environment.OSVersion.Version.Major >= 6)
-                SetProcessDPIAware();
             InitializeComponent();
             Subscribe();
         }
@@ -121,14 +121,14 @@ namespace winuake
         {
             Process p = new Process();
             p.StartInfo.FileName = shell;
-            p.StartInfo.UseShellExecute = false;
+            p.StartInfo.CreateNoWindow = false;
+            p.StartInfo.UseShellExecute = true;
+            p.StartInfo.WindowStyle = ProcessWindowStyle.Minimized;
             p.StartInfo.WorkingDirectory = startDir;
             p.EnableRaisingEvents = true;
             p.Exited += new EventHandler((s, e) => ExitFunk(s, e, tabOutput));
             p.Start();
-            ShowWindow(p.MainWindowHandle,SW_HIDE);
             Thread.Sleep(500);
-            //Hide Window
             //Set Window Style
             StyleWindow(p);
             //Focus on new Tab
@@ -139,7 +139,7 @@ namespace winuake
                     tabCtrl.Invoke(new MethodInvoker(delegate
                     {
                         tabCtrl.SelectedTab = tabOutput;
-                        SetParent(p.MainWindowHandle, tabOutput.Handle);
+                        //SetParent(p.MainWindowHandle, tabOutput.Handle);
                     }));
                 });
                 exitThread.Start();
@@ -359,6 +359,7 @@ namespace winuake
             this.Height = Screen.FromControl(this).Bounds.Height / 2;
             this.CenterToScreen();
             this.Top = 0;
+            resizeForm();
         }
         private void frmMain_SizeChanged(object sender, EventArgs e)
         {
@@ -378,6 +379,7 @@ namespace winuake
             if (this.WindowState == FormWindowState.Minimized)
             {
                 this.WindowState = FormWindowState.Normal;
+                this.FormBorderStyle = FormBorderStyle.None;
                 resizeForm();
                 Show();
                 resizeForm();
@@ -387,9 +389,11 @@ namespace winuake
             }
             else
             {
+                this.FormBorderStyle = FormBorderStyle.Sizable;
                 Hide();
                 this.WindowState = FormWindowState.Minimized;
                 this.lastState = this.WindowState;
+                notifyIcon.Visible = true;
             }
         }
         private void GlobalHookKeyCtrlShiftF1Press()
@@ -582,7 +586,22 @@ namespace winuake
 
         private void pctMenu_MouseLeave(object sender, EventArgs e)
         {
+            if (!menuOpen)
+            {
+                pctMenu.Image = Properties.Resources.menu_black_filled_transparent;
+            }
+        }
+
+        private void mainMenu_Opening(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            pctMenu.Image = Properties.Resources.down_black_transparent;
+            menuOpen = true;
+        }
+
+        private void mainMenu_Closed(object sender, ToolStripDropDownClosedEventArgs e)
+        {
             pctMenu.Image = Properties.Resources.menu_black_filled_transparent;
+            menuOpen = false;
         }
     }
 }
