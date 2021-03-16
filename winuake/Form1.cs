@@ -202,6 +202,7 @@ namespace winuake
                 tabCtrl.TabPages.Add(newTab);
                 addProcess(newTab);
             }
+
         }
         private void btnAddTab_Click(object sender, EventArgs e)
         {
@@ -294,6 +295,10 @@ namespace winuake
         }
         private void fixSize()
         {
+            if (this.WindowState == FormWindowState.Normal)
+            {
+                Show();
+            }
             for(int i = 0; i < listOfProcesses.Count; i++)
             {
                 Process p = listOfProcesses[i];
@@ -302,49 +307,8 @@ namespace winuake
                 SendMessage(p.MainWindowHandle, WmPaint, IntPtr.Zero, IntPtr.Zero);
             }
         }
-
-        private void focusCurrentTab(object sender, EventArgs e)
-        {
-            fixSize();
-            //MessageBox.Show("Searching for index.");
-            //Determine the index in the array of the currently selected tab
-            int tabIndex = -1;
-            TabPage selectedTab = tabCtrl.SelectedTab;
-            for (int i = 0; i < listOfProcesses.Count; i++)
-            {
-                TabPage currentTab = tabCtrl.TabPages[i];
-                if (currentTab == selectedTab)
-                {
-                    tabIndex = i;
-                }
-            }
-            //If an index was found focus the new tab
-            if (tabIndex > -1 && tabIndex < tabCtrl.TabPages.Count)
-            {
-                //MessageBox.Show("Index Found: "+ tabIndex.ToString());
-                if (tabCtrl.InvokeRequired)
-                {
-                    Thread exitThread = new Thread(delegate ()
-                    {
-                        tabCtrl.Invoke(new MethodInvoker(delegate
-                        {
-                            PositionWindow(listOfProcesses[tabIndex], tabCtrl.TabPages[tabIndex]);
-                            SetForegroundWindow(listOfProcesses[tabIndex].MainWindowHandle);
-                        }));
-                    });
-                    exitThread.Start();
-                }
-                else
-                {
-                    PositionWindow(listOfProcesses[tabIndex], tabCtrl.TabPages[tabIndex]);
-                    SetForegroundWindow(listOfProcesses[tabIndex].MainWindowHandle);
-                }
-            }
-        }
-
         private void focusLastTab()
         {
-            fixSize();
             //Focus on new Tab
             if (tabCtrl.InvokeRequired)
             {
@@ -416,9 +380,9 @@ namespace winuake
             {
                 this.WindowState = FormWindowState.Normal;
                 this.FormBorderStyle = FormBorderStyle.None;
+                resizeForm();
                 Show();
                 resizeForm();
-                fixSize();
                 this.Focus();
                 notifyIcon.Visible = false;
                 this.lastState = this.WindowState;
@@ -638,17 +602,6 @@ namespace winuake
         {
             pctMenu.Image = Properties.Resources.menu_black_filled_transparent;
             menuOpen = false;
-        }
-
-        private void tabCtrl_Selected(object sender, TabControlEventArgs e)
-        {
-            focusCurrentTab(sender,e);
-        }
-
-        private void tabCtrl_MouseUp(object sender, MouseEventArgs e)
-        {
-            fixSize();
-            focusCurrentTab(sender,e);
         }
     }
 }
