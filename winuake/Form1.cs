@@ -239,14 +239,17 @@ namespace winuake
                 {
                     try
                     {
-                        tabCtrl.Invoke(new MethodInvoker(delegate
+                        if (!exiting)
                         {
-                            if (tabCtrl.TabPages.Count > 1)
+                            tabCtrl.Invoke(new MethodInvoker(delegate
                             {
-                                tabCtrl.TabPages.Remove(tabOutput);
-                                focusLastTab();
-                            }
-                        }));
+                                if (tabCtrl.TabPages.Count > 1)
+                                {
+                                    tabCtrl.TabPages.Remove(tabOutput);
+                                    focusLastTab();
+                                }
+                            }));
+                        }
                     }catch(Exception err)
                     {
                         Console.WriteLine("Exception: " + err.ToString());
@@ -310,7 +313,7 @@ namespace winuake
             //Determine the index in the array of the currently selected tab
             int tabIndex = -1;
             TabPage selectedTab = tabCtrl.SelectedTab;
-            for (int i = 0; i < listOfProcesses.Count; i++)
+            for (int i = 0; i < tabCtrl.TabCount; i++)
             {
                 TabPage currentTab = tabCtrl.TabPages[i];
                 if (currentTab == selectedTab)
@@ -642,7 +645,9 @@ namespace winuake
 
         private void tabCtrl_Selected(object sender, TabControlEventArgs e)
         {
-            focusCurrentTab(sender,e);
+           
+            //fixSize();
+            //focusCurrentTab(sender,e);
         }
 
         private void tabCtrl_MouseUp(object sender, MouseEventArgs e)
