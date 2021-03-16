@@ -107,7 +107,6 @@
     <None Include="Resources\hide_black_filled_transparent.png" />
     <None Include="Resources\menu_black_transparent.png" />
     <None Include="Resources\menu_black_filled_transparent.png" />
-    <None Include="Resources\down_black_transparent.png" />
     <Content Include="UI-Icon.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -299,6 +299,8 @@ namespace winuake
             {
                 Show();
             }
+            tabCtrl.Height = this.Bounds.Height - 33;
+            tabCtrl.Width = this.Bounds.Width;
             for(int i = 0; i < listOfProcesses.Count; i++)
             {
                 Process p = listOfProcesses[i];
