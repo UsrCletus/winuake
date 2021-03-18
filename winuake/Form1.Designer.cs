@@ -43,6 +43,7 @@
             this.mainMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.menuAbout = new System.Windows.Forms.ToolStripMenuItem();
             this.menuNew = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuConfigure = new System.Windows.Forms.ToolStripMenuItem();
             this.tabMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.menuClose = new System.Windows.Forms.ToolStripMenuItem();
             this.tabCtrl.SuspendLayout();
@@ -79,12 +80,12 @@
             this.tabCtrl.ForeColor = System.Drawing.Color.LimeGreen;
             this.tabCtrl.HotColor = System.Drawing.Color.White;
             this.tabCtrl.HotTrack = true;
-            this.tabCtrl.Location = new System.Drawing.Point(-4, 2);
-            this.tabCtrl.Margin = new System.Windows.Forms.Padding(6);
+            this.tabCtrl.Location = new System.Drawing.Point(-3, 2);
+            this.tabCtrl.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.tabCtrl.Name = "tabCtrl";
             this.tabCtrl.SelectedIndex = 0;
             this.tabCtrl.SelectedTabColor = System.Drawing.Color.Black;
-            this.tabCtrl.Size = new System.Drawing.Size(2728, 1032);
+            this.tabCtrl.Size = new System.Drawing.Size(1624, 959);
             this.tabCtrl.TabColor = System.Drawing.Color.Black;
             this.tabCtrl.TabIndex = 3;
             this.tabCtrl.UseVisualStyles = false;
@@ -93,19 +94,19 @@
             // 
             // tabPageEX1
             // 
-            this.tabPageEX1.Location = new System.Drawing.Point(8, 8);
-            this.tabPageEX1.Margin = new System.Windows.Forms.Padding(6);
+            this.tabPageEX1.Location = new System.Drawing.Point(4, 4);
+            this.tabPageEX1.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.tabPageEX1.Name = "tabPageEX1";
-            this.tabPageEX1.Size = new System.Drawing.Size(2712, 990);
+            this.tabPageEX1.Size = new System.Drawing.Size(1616, 926);
             this.tabPageEX1.TabIndex = 0;
             this.tabPageEX1.Text = "tabPageEX1";
             // 
             // tabPageEX2
             // 
-            this.tabPageEX2.Location = new System.Drawing.Point(8, 8);
-            this.tabPageEX2.Margin = new System.Windows.Forms.Padding(6);
+            this.tabPageEX2.Location = new System.Drawing.Point(4, 4);
+            this.tabPageEX2.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.tabPageEX2.Name = "tabPageEX2";
-            this.tabPageEX2.Size = new System.Drawing.Size(2712, 990);
+            this.tabPageEX2.Size = new System.Drawing.Size(2038, 793);
             this.tabPageEX2.TabIndex = 1;
             this.tabPageEX2.Text = "tabPageEX2";
             // 
@@ -119,10 +120,10 @@
             this.panel1.Controls.Add(this.pctHide);
             this.panel1.Controls.Add(this.pctToggle);
             this.panel1.Controls.Add(this.ptcClose);
-            this.panel1.Location = new System.Drawing.Point(-4, 1045);
-            this.panel1.Margin = new System.Windows.Forms.Padding(6);
+            this.panel1.Location = new System.Drawing.Point(-3, 969);
+            this.panel1.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(2760, 56);
+            this.panel1.Size = new System.Drawing.Size(1648, 45);
             this.panel1.TabIndex = 5;
             // 
             // pctMenu
@@ -130,10 +131,10 @@
             this.pctMenu.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.pctMenu.Cursor = System.Windows.Forms.Cursors.Hand;
             this.pctMenu.Image = global::winuake.Properties.Resources.menu_black_filled_transparent;
-            this.pctMenu.Location = new System.Drawing.Point(58, 0);
-            this.pctMenu.Margin = new System.Windows.Forms.Padding(6);
+            this.pctMenu.Location = new System.Drawing.Point(44, 0);
+            this.pctMenu.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.pctMenu.Name = "pctMenu";
-            this.pctMenu.Size = new System.Drawing.Size(56, 48);
+            this.pctMenu.Size = new System.Drawing.Size(42, 38);
             this.pctMenu.TabIndex = 6;
             this.pctMenu.TabStop = false;
             this.pctMenu.Click += new System.EventHandler(this.pctMenu_Click);
@@ -145,10 +146,10 @@
             this.pctAdd.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.pctAdd.Cursor = System.Windows.Forms.Cursors.Hand;
             this.pctAdd.Image = global::winuake.Properties.Resources.add_black_filled_transparent;
-            this.pctAdd.Location = new System.Drawing.Point(6, 0);
-            this.pctAdd.Margin = new System.Windows.Forms.Padding(6);
+            this.pctAdd.Location = new System.Drawing.Point(4, 0);
+            this.pctAdd.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.pctAdd.Name = "pctAdd";
-            this.pctAdd.Size = new System.Drawing.Size(58, 48);
+            this.pctAdd.Size = new System.Drawing.Size(44, 38);
             this.pctAdd.TabIndex = 6;
             this.pctAdd.TabStop = false;
             this.pctAdd.Click += new System.EventHandler(this.pctAdd_Click);
@@ -160,10 +161,10 @@
             this.pctHide.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.pctHide.Cursor = System.Windows.Forms.Cursors.Hand;
             this.pctHide.Image = global::winuake.Properties.Resources.hide_black_filled_transparent;
-            this.pctHide.Location = new System.Drawing.Point(2568, 0);
-            this.pctHide.Margin = new System.Windows.Forms.Padding(6);
+            this.pctHide.Location = new System.Drawing.Point(1504, 0);
+            this.pctHide.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.pctHide.Name = "pctHide";
-            this.pctHide.Size = new System.Drawing.Size(56, 48);
+            this.pctHide.Size = new System.Drawing.Size(42, 38);
             this.pctHide.TabIndex = 6;
             this.pctHide.TabStop = false;
             this.pctHide.Click += new System.EventHandler(this.pctHide_Click);
@@ -175,10 +176,10 @@
             this.pctToggle.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.pctToggle.Cursor = System.Windows.Forms.Cursors.Hand;
             this.pctToggle.Image = global::winuake.Properties.Resources.minimize_black_transparent;
-            this.pctToggle.Location = new System.Drawing.Point(2636, 0);
-            this.pctToggle.Margin = new System.Windows.Forms.Padding(6);
+            this.pctToggle.Location = new System.Drawing.Point(1555, 0);
+            this.pctToggle.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.pctToggle.Name = "pctToggle";
-            this.pctToggle.Size = new System.Drawing.Size(52, 48);
+            this.pctToggle.Size = new System.Drawing.Size(39, 38);
             this.pctToggle.TabIndex = 6;
             this.pctToggle.TabStop = false;
             this.pctToggle.Click += new System.EventHandler(this.pctToggle_Click);
@@ -191,10 +192,10 @@
             this.ptcClose.BackColor = System.Drawing.Color.Transparent;
             this.ptcClose.Cursor = System.Windows.Forms.Cursors.Hand;
             this.ptcClose.Image = global::winuake.Properties.Resources.close_black_transparent;
-            this.ptcClose.Location = new System.Drawing.Point(2700, 0);
-            this.ptcClose.Margin = new System.Windows.Forms.Padding(6);
+            this.ptcClose.Location = new System.Drawing.Point(1603, 0);
+            this.ptcClose.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.ptcClose.Name = "ptcClose";
-            this.ptcClose.Size = new System.Drawing.Size(54, 48);
+            this.ptcClose.Size = new System.Drawing.Size(40, 38);
             this.ptcClose.TabIndex = 4;
             this.ptcClose.TabStop = false;
             this.ptcClose.Click += new System.EventHandler(this.ptcClose_Click);
@@ -206,23 +207,31 @@
             this.mainMenu.ImageScalingSize = new System.Drawing.Size(32, 32);
             this.mainMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.menuAbout,
-            this.menuNew});
+            this.menuNew,
+            this.menuConfigure});
             this.mainMenu.Name = "mainMenu";
-            this.mainMenu.Size = new System.Drawing.Size(156, 80);
+            this.mainMenu.Size = new System.Drawing.Size(231, 100);
             this.mainMenu.Closed += new System.Windows.Forms.ToolStripDropDownClosedEventHandler(this.mainMenu_Closed);
             this.mainMenu.Opening += new System.ComponentModel.CancelEventHandler(this.mainMenu_Opening);
             // 
             // menuAbout
             // 
             this.menuAbout.Name = "menuAbout";
-            this.menuAbout.Size = new System.Drawing.Size(155, 38);
+            this.menuAbout.Size = new System.Drawing.Size(230, 32);
             this.menuAbout.Text = "About";
             // 
             // menuNew
             // 
             this.menuNew.Name = "menuNew";
-            this.menuNew.Size = new System.Drawing.Size(155, 38);
+            this.menuNew.Size = new System.Drawing.Size(230, 32);
             this.menuNew.Text = "New";
+            // 
+            // menuConfigure
+            // 
+            this.menuConfigure.Name = "menuConfigure";
+            this.menuConfigure.Size = new System.Drawing.Size(230, 32);
+            this.menuConfigure.Text = "Configure Yakuake";
+            this.menuConfigure.Click += new System.EventHandler(this.menuConfigure_Click);
             // 
             // tabMenu
             // 
@@ -230,25 +239,24 @@
             this.tabMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.menuClose});
             this.tabMenu.Name = "tabMenu";
-            this.tabMenu.Size = new System.Drawing.Size(192, 42);
+            this.tabMenu.Size = new System.Drawing.Size(160, 36);
             // 
             // menuClose
             // 
             this.menuClose.Name = "menuClose";
-            this.menuClose.Size = new System.Drawing.Size(191, 38);
+            this.menuClose.Size = new System.Drawing.Size(159, 32);
             this.menuClose.Text = "Close Tab";
             // 
             // frmMain
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(12F, 25F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.InfoText;
-            this.ClientSize = new System.Drawing.Size(2748, 1093);
+            this.ClientSize = new System.Drawing.Size(1639, 1007);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.tabCtrl);
             this.ForeColor = System.Drawing.Color.DarkGreen;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "frmMain";
             this.Opacity = 0.8D;
             this.Text = "Winuake";
@@ -284,6 +292,7 @@
         private System.Windows.Forms.ToolStripMenuItem menuNew;
         private System.Windows.Forms.ContextMenuStrip tabMenu;
         private System.Windows.Forms.ToolStripMenuItem menuClose;
+        private System.Windows.Forms.ToolStripMenuItem menuConfigure;
     }
 }
 

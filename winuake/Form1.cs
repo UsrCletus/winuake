@@ -52,6 +52,8 @@ namespace winuake
         //Constant for process(es)
         //private Process p = null;
         private String shell = @"C:\Windows\sysnative\wsl.exe";
+        //private String shell = @"C:\Windows\System32\cmd.exe";
+        //private String shell = @"C:\Windows\SysWOW64\WindowsPowerShell\v1.0\powershell.exe";
         private String startDir = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
         //overrides minimize and maximize default behavior
         private const int WM_SYSCOMMAND = 0x0112;
@@ -500,12 +502,13 @@ namespace winuake
             // Note: for the application hook, use the Hook.AppEvents() instead
             m_GlobalHook = Hook.GlobalEvents();
             m_GlobalHook.KeyPress += GlobalHookKeyPress;
+            //Detect Ctrl + Shift + F11
             m_GlobalHook.OnCombination(new Dictionary<Combination, Action>() {
-                { Combination.FromString("Control+F2"), GlobalHookKeyCtrlShiftF1Press },
+                { Combination.FromString("Control+Shift+F11"), GlobalHookKeyCtrlShiftF1Press },
             });
-            //Detect Ctrl + F1
+            //Detect F12
             m_GlobalHook.OnCombination(new Dictionary<Combination, Action>() {
-                { Combination.FromString("Control+F1"), GlobalHookKeyCtrlF1Press },
+                { Combination.FromString("F12"), GlobalHookKeyCtrlF1Press },
             });
         }
         private void Unsubscribe()
@@ -654,6 +657,12 @@ namespace winuake
         {
             fixSize();
             focusCurrentTab(sender,e);
+        }
+
+        private void menuConfigure_Click(object sender, EventArgs e)
+        {
+            frmSettings settingsForm = new frmSettings();
+            settingsForm.ShowDialog();
         }
     }
 }
