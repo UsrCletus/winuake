@@ -310,9 +310,8 @@ namespace winuake
 
         private void focusCurrentTab(object sender, EventArgs e)
         {
-            //fixSize();
             //MessageBox.Show("Searching for index.");
-            if (tabCtrl.SelectedIndex > -1 && tabCtrl.SelectedIndex < tabCtrl.TabCount - 1)
+            if (tabCtrl.SelectedIndex > -1 && tabCtrl.SelectedIndex < tabCtrl.TabCount && tabCtrl.TabCount == listOfProcesses.Count)
             {
                 if (tabCtrl.InvokeRequired)
                 {
@@ -320,8 +319,10 @@ namespace winuake
                     {
                         tabCtrl.Invoke(new MethodInvoker(delegate
                         {
+                            MoveWindow(listOfProcesses[tabCtrl.SelectedIndex].MainWindowHandle, 0, 0, tabCtrl.Width, tabCtrl.Height, true);
                             PositionWindow(listOfProcesses[tabCtrl.SelectedIndex], tabCtrl.TabPages[tabCtrl.SelectedIndex]);
                             SetForegroundWindow(listOfProcesses[tabCtrl.SelectedIndex].MainWindowHandle);
+                            SendMessage(listOfProcesses[tabCtrl.SelectedIndex].MainWindowHandle, WmPaint, IntPtr.Zero, IntPtr.Zero);
                             //MessageBox.Show("Invoke was required.");
                         }));
                     });
@@ -329,8 +330,10 @@ namespace winuake
                 }
                 else
                 {
+                    MoveWindow(listOfProcesses[tabCtrl.SelectedIndex].MainWindowHandle, 0, 0, tabCtrl.Width, tabCtrl.Height, true);
                     PositionWindow(listOfProcesses[tabCtrl.SelectedIndex], tabCtrl.TabPages[tabCtrl.SelectedIndex]);
                     SetForegroundWindow(listOfProcesses[tabCtrl.SelectedIndex].MainWindowHandle);
+                    SendMessage(listOfProcesses[tabCtrl.SelectedIndex].MainWindowHandle, WmPaint, IntPtr.Zero, IntPtr.Zero);
                     //MessageBox.Show("Invoke was not required.");
                 }
             }
@@ -342,6 +345,7 @@ namespace winuake
                     focusLastTab();
                 }
             }
+            fixSize();
         }
 
         private void focusLastTab()
@@ -658,6 +662,12 @@ namespace winuake
         {
             frmSettings settingsForm = new frmSettings();
             settingsForm.ShowDialog();
+        }
+
+        private void tabCtrl_TabIndexChanged(object sender, EventArgs e)
+        {
+            focusCurrentTab(sender, e);
+            fixSize();
         }
     }
 }

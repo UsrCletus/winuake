@@ -23,3 +23,4 @@ C:\Users\Cletus\Documents\GitHub\winuake\winuake\obj\Debug\winuake.csproj.CopyCo
 C:\Users\Cletus\Documents\GitHub\winuake\winuake\obj\Debug\winuake.exe
 C:\Users\Cletus\Documents\GitHub\winuake\winuake\obj\Debug\winuake.pdb
 C:\Users\Cletus\Documents\GitHub\winuake\winuake\obj\Debug\winuake.frmSettings.resources
+C:\Users\Cletus\Documents\GitHub\winuake\winuake\obj\Debug\winuake.csprojAssemblyReference.cache
