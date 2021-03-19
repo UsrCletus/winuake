@@ -83,21 +83,20 @@
             this.tabCtrl.Location = new System.Drawing.Point(-3, 2);
             this.tabCtrl.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.tabCtrl.Name = "tabCtrl";
-            this.tabCtrl.SelectedIndex = 0;
+            this.tabCtrl.SelectedIndex = 1;
             this.tabCtrl.SelectedTabColor = System.Drawing.Color.Black;
-            this.tabCtrl.Size = new System.Drawing.Size(1624, 959);
+            this.tabCtrl.Size = new System.Drawing.Size(1440, 980);
             this.tabCtrl.TabColor = System.Drawing.Color.Black;
             this.tabCtrl.TabIndex = 3;
             this.tabCtrl.UseVisualStyles = false;
             this.tabCtrl.Selected += new System.Windows.Forms.TabControlEventHandler(this.tabCtrl_Selected);
-            this.tabCtrl.MouseUp += new System.Windows.Forms.MouseEventHandler(this.tabCtrl_MouseUp);
             // 
             // tabPageEX1
             // 
             this.tabPageEX1.Location = new System.Drawing.Point(4, 4);
             this.tabPageEX1.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.tabPageEX1.Name = "tabPageEX1";
-            this.tabPageEX1.Size = new System.Drawing.Size(1616, 926);
+            this.tabPageEX1.Size = new System.Drawing.Size(1432, 947);
             this.tabPageEX1.TabIndex = 0;
             this.tabPageEX1.Text = "tabPageEX1";
             // 
@@ -106,7 +105,7 @@
             this.tabPageEX2.Location = new System.Drawing.Point(4, 4);
             this.tabPageEX2.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.tabPageEX2.Name = "tabPageEX2";
-            this.tabPageEX2.Size = new System.Drawing.Size(2038, 793);
+            this.tabPageEX2.Size = new System.Drawing.Size(1432, 947);
             this.tabPageEX2.TabIndex = 1;
             this.tabPageEX2.Text = "tabPageEX2";
             // 
@@ -120,10 +119,10 @@
             this.panel1.Controls.Add(this.pctHide);
             this.panel1.Controls.Add(this.pctToggle);
             this.panel1.Controls.Add(this.ptcClose);
-            this.panel1.Location = new System.Drawing.Point(-3, 969);
+            this.panel1.Location = new System.Drawing.Point(-3, 990);
             this.panel1.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(1648, 45);
+            this.panel1.Size = new System.Drawing.Size(1464, 45);
             this.panel1.TabIndex = 5;
             // 
             // pctMenu
@@ -161,7 +160,7 @@
             this.pctHide.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.pctHide.Cursor = System.Windows.Forms.Cursors.Hand;
             this.pctHide.Image = global::winuake.Properties.Resources.hide_black_filled_transparent;
-            this.pctHide.Location = new System.Drawing.Point(1504, 0);
+            this.pctHide.Location = new System.Drawing.Point(1320, 0);
             this.pctHide.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.pctHide.Name = "pctHide";
             this.pctHide.Size = new System.Drawing.Size(42, 38);
@@ -176,7 +175,7 @@
             this.pctToggle.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.pctToggle.Cursor = System.Windows.Forms.Cursors.Hand;
             this.pctToggle.Image = global::winuake.Properties.Resources.minimize_black_transparent;
-            this.pctToggle.Location = new System.Drawing.Point(1555, 0);
+            this.pctToggle.Location = new System.Drawing.Point(1371, 0);
             this.pctToggle.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.pctToggle.Name = "pctToggle";
             this.pctToggle.Size = new System.Drawing.Size(39, 38);
@@ -192,7 +191,7 @@
             this.ptcClose.BackColor = System.Drawing.Color.Transparent;
             this.ptcClose.Cursor = System.Windows.Forms.Cursors.Hand;
             this.ptcClose.Image = global::winuake.Properties.Resources.close_black_transparent;
-            this.ptcClose.Location = new System.Drawing.Point(1603, 0);
+            this.ptcClose.Location = new System.Drawing.Point(1419, 0);
             this.ptcClose.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.ptcClose.Name = "ptcClose";
             this.ptcClose.Size = new System.Drawing.Size(40, 38);
@@ -252,7 +251,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.InfoText;
-            this.ClientSize = new System.Drawing.Size(1639, 1007);
+            this.ClientSize = new System.Drawing.Size(1455, 1028);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.tabCtrl);
             this.ForeColor = System.Drawing.Color.DarkGreen;

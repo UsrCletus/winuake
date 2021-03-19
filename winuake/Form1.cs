@@ -130,7 +130,7 @@ namespace winuake
             p.EnableRaisingEvents = true;
             p.Exited += new EventHandler((s, e) => ExitFunk(s, e, tabOutput));
             p.Start();
-            Thread.Sleep(500);
+            Thread.Sleep(250);
             //Set Window Style
             StyleWindow(p);
             //Focus on new Tab
@@ -310,39 +310,36 @@ namespace winuake
 
         private void focusCurrentTab(object sender, EventArgs e)
         {
-            fixSize();
+            //fixSize();
             //MessageBox.Show("Searching for index.");
-            //Determine the index in the array of the currently selected tab
-            int tabIndex = -1;
-            TabPage selectedTab = tabCtrl.SelectedTab;
-            for (int i = 0; i < tabCtrl.TabCount; i++)
+            if (tabCtrl.SelectedIndex > -1 && tabCtrl.SelectedIndex < tabCtrl.TabCount - 1)
             {
-                TabPage currentTab = tabCtrl.TabPages[i];
-                if (currentTab == selectedTab)
-                {
-                    tabIndex = i;
-                }
-            }
-            //If an index was found focus the new tab
-            if (tabIndex > -1 && tabIndex < tabCtrl.TabPages.Count)
-            {
-                //MessageBox.Show("Index Found: "+ tabIndex.ToString());
                 if (tabCtrl.InvokeRequired)
                 {
                     Thread exitThread = new Thread(delegate ()
                     {
                         tabCtrl.Invoke(new MethodInvoker(delegate
                         {
-                            PositionWindow(listOfProcesses[tabIndex], tabCtrl.TabPages[tabIndex]);
-                            SetForegroundWindow(listOfProcesses[tabIndex].MainWindowHandle);
+                            PositionWindow(listOfProcesses[tabCtrl.SelectedIndex], tabCtrl.TabPages[tabCtrl.SelectedIndex]);
+                            SetForegroundWindow(listOfProcesses[tabCtrl.SelectedIndex].MainWindowHandle);
+                            //MessageBox.Show("Invoke was required.");
                         }));
                     });
                     exitThread.Start();
                 }
                 else
                 {
-                    PositionWindow(listOfProcesses[tabIndex], tabCtrl.TabPages[tabIndex]);
-                    SetForegroundWindow(listOfProcesses[tabIndex].MainWindowHandle);
+                    PositionWindow(listOfProcesses[tabCtrl.SelectedIndex], tabCtrl.TabPages[tabCtrl.SelectedIndex]);
+                    SetForegroundWindow(listOfProcesses[tabCtrl.SelectedIndex].MainWindowHandle);
+                    //MessageBox.Show("Invoke was not required.");
+                }
+            }
+            else
+            {
+                if (tabCtrl.SelectedIndex == tabCtrl.TabCount - 1 && tabCtrl.TabCount == listOfProcesses.Count)
+                {
+                    //MessageBox.Show("SelectedIndex: " + tabCtrl.SelectedIndex + " Tab Count: " + tabCtrl.TabCount + "Process count: " + listOfProcesses.Count);
+                    focusLastTab();
                 }
             }
         }
@@ -351,26 +348,29 @@ namespace winuake
         {
             fixSize();
             //Focus on new Tab
-            if (tabCtrl.InvokeRequired)
+            if (tabCtrl.TabCount > 0)
             {
-                Thread exitThread = new Thread(delegate ()
+                if (tabCtrl.InvokeRequired)
                 {
-                    tabCtrl.Invoke(new MethodInvoker(delegate
+                    Thread exitThread = new Thread(delegate ()
                     {
-                        tabCtrl.SelectedTab = tabCtrl.TabPages[tabCtrl.TabPages.Count - 1];
-                        SetParent(listOfProcesses[tabCtrl.TabPages.Count - 1].MainWindowHandle, tabCtrl.TabPages[tabCtrl.TabPages.Count - 1].Handle);
-                        PositionWindow(listOfProcesses[tabCtrl.TabPages.Count - 1], tabCtrl.TabPages[tabCtrl.TabPages.Count - 1]);
-                        SetForegroundWindow(listOfProcesses[tabCtrl.TabPages.Count - 1].MainWindowHandle);
-                    }));
-                });
-                exitThread.Start();
-            }
-            else
-            {
-                tabCtrl.SelectedTab = tabCtrl.TabPages[tabCtrl.TabPages.Count - 1];
-                SetParent(listOfProcesses[tabCtrl.TabPages.Count - 1].MainWindowHandle, tabCtrl.TabPages[tabCtrl.TabPages.Count - 1].Handle);
-                PositionWindow(listOfProcesses[tabCtrl.TabPages.Count - 1], tabCtrl.TabPages[tabCtrl.TabPages.Count - 1]);
-                SetForegroundWindow(listOfProcesses[tabCtrl.TabPages.Count - 1].MainWindowHandle);
+                        tabCtrl.Invoke(new MethodInvoker(delegate
+                        {
+                            tabCtrl.SelectedTab = tabCtrl.TabPages[tabCtrl.TabPages.Count - 1];
+                            SetParent(listOfProcesses[tabCtrl.TabPages.Count - 1].MainWindowHandle, tabCtrl.TabPages[tabCtrl.TabPages.Count - 1].Handle);
+                            PositionWindow(listOfProcesses[tabCtrl.TabPages.Count - 1], tabCtrl.TabPages[tabCtrl.TabPages.Count - 1]);
+                            SetForegroundWindow(listOfProcesses[tabCtrl.TabPages.Count - 1].MainWindowHandle);
+                        }));
+                    });
+                    exitThread.Start();
+                }
+                else
+                {
+                    tabCtrl.SelectedTab = tabCtrl.TabPages[tabCtrl.TabPages.Count - 1];
+                    SetParent(listOfProcesses[tabCtrl.TabPages.Count - 1].MainWindowHandle, tabCtrl.TabPages[tabCtrl.TabPages.Count - 1].Handle);
+                    PositionWindow(listOfProcesses[tabCtrl.TabPages.Count - 1], tabCtrl.TabPages[tabCtrl.TabPages.Count - 1]);
+                    SetForegroundWindow(listOfProcesses[tabCtrl.TabPages.Count - 1].MainWindowHandle);
+                }
             }
         }
         private void frmMain_FormClosing(object sender, FormClosingEventArgs e)
@@ -462,9 +462,12 @@ namespace winuake
         }
         private void PositionWindow(Process p, TabPage tabOutput)
         {
-            SetWindowPos(p.MainWindowHandle, 0, 0, 0, tabOutput.Bounds.Width, tabOutput.Bounds.Height, SWP_NOMOVE | SWP_NOSIZE | SWP_FRAMECHANGED);
-            MoveWindow(p.MainWindowHandle, 0, 0, tabOutput.Width, tabOutput.Height, true);
-            SendMessage(p.MainWindowHandle, WmPaint, IntPtr.Zero, IntPtr.Zero);
+            if (tabCtrl.TabCount > 0)
+            {
+                SetWindowPos(p.MainWindowHandle, 0, 0, 0, tabOutput.Bounds.Width, tabOutput.Bounds.Height, SWP_NOMOVE | SWP_NOSIZE | SWP_FRAMECHANGED);
+                MoveWindow(p.MainWindowHandle, 0, 0, tabOutput.Width, tabOutput.Height, true);
+                SendMessage(p.MainWindowHandle, WmPaint, IntPtr.Zero, IntPtr.Zero);
+            }
         }
 
         private void resizeForm()
@@ -648,14 +651,6 @@ namespace winuake
 
         private void tabCtrl_Selected(object sender, TabControlEventArgs e)
         {
-           
-            //fixSize();
-            //focusCurrentTab(sender,e);
-        }
-
-        private void tabCtrl_MouseUp(object sender, MouseEventArgs e)
-        {
-            fixSize();
             focusCurrentTab(sender,e);
         }
 

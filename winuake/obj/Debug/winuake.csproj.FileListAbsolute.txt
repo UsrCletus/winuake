@@ -15,7 +15,6 @@ C:\Users\Mike\source\repos\winuake\winuake\bin\Debug\TabControlEX.dll
 C:\Users\Cletus\Documents\GitHub\winuake\winuake\bin\Debug\winuake.exe.config
 C:\Users\Cletus\Documents\GitHub\winuake\winuake\bin\Debug\winuake.exe
 C:\Users\Cletus\Documents\GitHub\winuake\winuake\bin\Debug\winuake.pdb
-C:\Users\Cletus\Documents\GitHub\winuake\winuake\obj\Debug\winuake.csprojAssemblyReference.cache
 C:\Users\Cletus\Documents\GitHub\winuake\winuake\obj\Debug\winuake.frmMain.resources
 C:\Users\Cletus\Documents\GitHub\winuake\winuake\obj\Debug\winuake.Properties.Resources.resources
 C:\Users\Cletus\Documents\GitHub\winuake\winuake\obj\Debug\winuake.csproj.GenerateResource.cache
